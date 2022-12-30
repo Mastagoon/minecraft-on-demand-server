@@ -85,7 +85,7 @@ export const createDroplet = async (snapshotId?: number) => {
 	const payload = {
 		name: process.env.SERVER_NAME,
 		region: "fra1",
-		size: "s-1vcpu-1gb",
+		size: "s-1vcpu-2gb",
 		image: snapshotId,
 		ssh_keys: [process.env.SSH_FINGERPRINT],
 	}
