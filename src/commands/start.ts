@@ -36,6 +36,7 @@ const start = async (options: CommandExecuteParameters) => {
 	isSlash ? interaction?.reply(response) : message?.reply(response)
 	// spawn the server
 	const spawn = await spawnNewServer()
+	isSlash ? interaction?.reply(`تم تشغيل السيرفر, يرجى لانتظار لـ 5 دقائئق قبل محاولة الإتصال`) : message?.reply(`تم تشغيل السيرفر, يرجى لانتظار لـ 5 دقائئق قبل محاولة الإتصال`)
 	if (spawn) {
 		return isSlash
 			? interaction?.reply(`السيرفر يعمل حالياً على الآي بي: ${spawn}`)
