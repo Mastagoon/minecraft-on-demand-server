@@ -6,7 +6,7 @@ const options: CommandArg[] = []
 
 let pause = false
 
-const start = async (options: CommandExecuteParameters) => {
+const stop = async (options: CommandExecuteParameters) => {
 	const { type, message, interaction } = options
 	const isSlash = type === "interaction"
 	if (pause)
@@ -27,9 +27,9 @@ const start = async (options: CommandExecuteParameters) => {
 	isSlash ? interaction?.reply(`تم ايقاف السيرفر`) : message?.reply(`تم ايقاف السيرفر`)
 }
 export default new Command(
-	"start",
-	"Start the minecraft server",
-	["new", "run"],
-	start,
+	"stop",
+	"Stops the minecraft server",
+	[],
+	stop,
 	options
 )

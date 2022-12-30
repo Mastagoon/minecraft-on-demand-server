@@ -44,7 +44,7 @@ const start = async (options: CommandExecuteParameters) => {
 }
 export default new Command(
 	"start",
-	"Start a new Jazarah RO Server",
+	"Start a new server",
 	["new", "run"],
 	start,
 	options
