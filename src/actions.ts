@@ -23,7 +23,6 @@ export const isServerUp = async (): Promise<
 	const droplets = await getAllDroplets()
 	if (!droplets) return false
 	const name = constants.DROPLET_NAME
-	if (!name) throw new Error("No droplet name")
 	const server = droplets.find((droplet) => droplet.name.startsWith(name))
 	const serverStatus = server ? server.status : "down"
 	Log.debug(`Server status: ${serverStatus}`)

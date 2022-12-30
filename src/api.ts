@@ -83,7 +83,7 @@ export const getAllDroplets = async () => {
 
 export const createDroplet = async (snapshotId?: number) => {
 	const payload = {
-		name: constants.SERVER_NAME,
+		name: constants.DROPLET_NAME,
 		region: "fra1",
 		size: "s-1vcpu-2gb",
 		image: snapshotId,
