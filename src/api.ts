@@ -19,7 +19,7 @@ export const post = async (url: string, body: any): Promise<ResponseModel> => {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: "Bearer " + process.env.DO_TOKEN,
+				Authorization: "Bearer " + constants.DO_TOKEN,
 			},
 			body: JSON.stringify(body),
 		})
@@ -39,7 +39,7 @@ export const _delete = async (url: string): Promise<ResponseModel> => {
 			method: "DELETE",
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: "Bearer " + process.env.DO_TOKEN,
+				Authorization: "Bearer " + constants.DO_TOKEN,
 			},
 		})
 		Log.info(`result <-- ${result.status} - ${result.statusText}`)
@@ -57,7 +57,7 @@ export const get = async (url: string): Promise<ResponseModel> => {
 		const result = await fetch(url, {
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: "Bearer " + process.env.DO_TOKEN,
+				Authorization: "Bearer " + constants.DO_TOKEN,
 			},
 		})
 		Log.info(`result <-- ${result.status} - ${result.statusText}`)
@@ -83,11 +83,11 @@ export const getAllDroplets = async () => {
 
 export const createDroplet = async (snapshotId?: number) => {
 	const payload = {
-		name: process.env.SERVER_NAME,
+		name: constants.SERVER_NAME,
 		region: "fra1",
 		size: "s-1vcpu-2gb",
 		image: snapshotId,
-		ssh_keys: [process.env.SSH_FINGERPRINT],
+		ssh_keys: constants.SSH_FINGERPRINT,
 	}
 	const result = await post(URLS.CREATE_DROPLET, payload)
 	if (result.status > 300) throw new Error("Failed!")
@@ -114,7 +114,7 @@ export const getSnapshot = async (id: number) => {
 
 export const createSnapshot = async (
 	serverId: number,
-	name = process.env.SNAPSHOT_NAME
+	name = constants.SNAPSHOT_NAME
 ) => {
 	const result = await post(URLS.DROPLET_ACTIONS(serverId), {
 		type: "snapshot",
@@ -140,7 +140,7 @@ export const deleteDroplet = async (id: number) => {
 		method: "DELETE",
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: "Bearer " + process.env.DO_TOKEN,
+			Authorization: "Bearer " + constants.DO_TOKEN,
 		},
 	})
 	if (result.status > 300) throw new Error("Failed!")

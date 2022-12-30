@@ -1,4 +1,3 @@
-import fs from "fs"
 import {
 	createDroplet,
 	createSnapshot,
@@ -9,10 +8,7 @@ import {
 	listSnapshots,
 	shutDownDroplet,
 } from "./api"
-import FormData from "form-data"
-import fetch from "node-fetch"
 import constants from "./constants"
-import createXML from "./util/createXML"
 import Log from "./util/logger"
 
 export const isServerUp = async (): Promise<
@@ -26,7 +22,7 @@ export const isServerUp = async (): Promise<
 > => {
 	const droplets = await getAllDroplets()
 	if (!droplets) return false
-	const name = process.env.DROPLET_NAME
+	const name = constants.DROPLET_NAME
 	if (!name) throw new Error("No droplet name")
 	const server = droplets.find((droplet) => droplet.name.startsWith(name))
 	const serverStatus = server ? server.status : "down"
@@ -43,7 +39,7 @@ export const spawnNewServer = async (): Promise<string | undefined> => {
 	// 1- find snapshot
 	const snapshots = await listSnapshots()
 	const snapshotId = snapshots.find(
-		(snapshot) => snapshot.name === process.env.SNAPSHOT_NAME
+		(snapshot) => snapshot.name === constants.SNAPSHOT_NAME
 	)?.id
 	// 2- create droplet
 	let droplet = await createDroplet(snapshotId)
@@ -59,8 +55,6 @@ export const spawnNewServer = async (): Promise<string | undefined> => {
 	const ip = droplet.networks.v4.find((n: any) => n.type === "public")
 		?.ip_address as string
 	Log.debug("Server up at " + ip)
-	const xml = createXML(ip)
-	await uploadNewClientinfo(xml)
 	return ip
 }
 
@@ -83,7 +77,7 @@ export const updateSnapshot = async (id: number) => {
 	// create a new snapshot
 	const list = await listSnapshots()
 	const oldSnapshot = list.find(
-		(snapshot) => snapshot.name === process.env.SNAPSHOT_NAME
+		(snapshot) => snapshot.name === constants.SNAPSHOT_NAME
 	)
 	await createSnapshot(id)
 	// wait for the snapshot to be created
@@ -98,19 +92,4 @@ export const updateSnapshot = async (id: number) => {
 		// sleep for 120 seconds
 		await new Promise((resolve) => setTimeout(resolve, 120000))
 	}
-}
-
-const uploadNewClientinfo = async (xml: string) => {
-	fs.writeFileSync("clientinfo.xml", xml)
-	const f = fs.readFileSync("clientinfo.xml")
-	const form = new FormData()
-	form.append("Content-Type", "application/octet-stream")
-	form.append("sampleFile", f)
-	Log.info(`Updating XML file...`)
-	const result = await fetch(constants.XML_UPLOAD_URL, {
-		method: "POST",
-		//@ts-ignore
-		body: form,
-	})
-	Log.info(`Updating XML file: ${result.status} ${result.statusText}`)
 }

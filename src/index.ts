@@ -3,6 +3,7 @@ import Log from "./util/logger.js"
 import Discord, { Collection } from "discord.js"
 import { Command } from "./lib/Command.js"
 import CommandManager from "./lib/commandManager.js"
+import { intializeConstants } from "./constants.js"
 declare module "discord.js" {
 	export interface Client {
 		commands: Collection<string, Command>
@@ -23,6 +24,7 @@ const bot = new Discord.Client({
 
 bot.on("ready", async () => {
 	Log.info(`Logged in as ${bot.user?.username}`)
+	intializeConstants()
 	const commandManager = new CommandManager(bot)
 	await commandManager.Init()
 })
