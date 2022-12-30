@@ -25,15 +25,21 @@ export const intializeConstants = () => {
 	const SNAPSHOT_NAME = process.env.SNAPSHOT_NAME
 	const SERVER_NAME = process.env.SERVER_NAME
 	const DROPLET_NAME = process.env.DROPLET_NAME
-	if (!DO_TOKEN || !SSH_FINGERPRINT || !SNAPSHOT_NAME || !SERVER_NAME || !DROPLET_NAME) {
-		Log.error("Missing environment variables!")
+	let mes = ""
+	if (!DO_TOKEN) mes += "DO_TOKEN "
+	if (!SSH_FINGERPRINT) mes += "SSH_FINGERPRINT "
+	if (!SNAPSHOT_NAME) mes += "SNAPSHOT_NAME "
+	if (!SERVER_NAME) mes += "SERVER_NAME "
+	if (!DROPLET_NAME) mes += "DROPLET_NAME "
+	if (mes.length > 0) {
+		Log.error("Missing environment variables! The program will now exit\n Missing variables: " + mes)
 		process.exit(1)
 	}
-	constants.DO_TOKEN = DO_TOKEN
-	constants.SSH_FINGERPRINT = SSH_FINGERPRINT.split(",")
-	constants.SNAPSHOT_NAME = SNAPSHOT_NAME
-	constants.SERVER_NAME = SERVER_NAME
-	constants.DROPLET_NAME = DROPLET_NAME
+	constants.DO_TOKEN = DO_TOKEN!
+	constants.SSH_FINGERPRINT = SSH_FINGERPRINT!.split(",")
+	constants.SNAPSHOT_NAME = SNAPSHOT_NAME!
+	constants.SERVER_NAME = SERVER_NAME!
+	constants.DROPLET_NAME = DROPLET_NAME!
 }
 
 export default constants
