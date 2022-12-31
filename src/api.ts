@@ -14,6 +14,7 @@ export type ResponseModel = {
 
 export const post = async (url: string, body: any): Promise<ResponseModel> => {
 	try {
+		let retries = 0
 		Log.info(`POST --> ${url}\n${JSON.stringify(body, null, 2)}`)
 		const result = await fetch(url, {
 			method: "POST",
@@ -24,7 +25,14 @@ export const post = async (url: string, body: any): Promise<ResponseModel> => {
 			body: JSON.stringify(body),
 		})
 		Log.info(`POST <-- ${url}\n${JSON.stringify(result, null, 2)}`)
-		if (result.status > 300) throw new Error("Failed!")
+		if (result.status > 500 && retries < 5) {
+			retries++
+			Log.info(`Retrying... ${retries}`)
+			// wait for 30 seconds
+			await new Promise((resolve) => setTimeout(resolve, 30000))
+			return post(url, body)
+		}
+		if (result.status >= 400) throw new Error("Failed!")
 		const data = await result.json()
 		return { status: result.status, body: data }
 	} catch (err: any) {
@@ -53,6 +61,7 @@ export const _delete = async (url: string): Promise<ResponseModel> => {
 
 export const get = async (url: string): Promise<ResponseModel> => {
 	try {
+		let retries = 0
 		Log.info(`GET --> ${url}`)
 		const result = await fetch(url, {
 			headers: {
@@ -61,7 +70,14 @@ export const get = async (url: string): Promise<ResponseModel> => {
 			},
 		})
 		Log.info(`result <-- ${result.status} - ${result.statusText}`)
-		if (result.status !== 200) throw new Error("Failed!")
+		if (result.status > 500 && retries < 5) {
+			retries++
+			Log.info(`Retrying... ${retries}`)
+			// wait for 30 seconds
+			await new Promise((resolve) => setTimeout(resolve, 30000))
+			return get(url)
+		}
+		if (result.status >= 400) throw new Error("Failed!")
 		const data = await result.json()
 		return { status: result.status, body: data }
 	} catch (err: any) {
@@ -90,25 +106,25 @@ export const createDroplet = async (snapshotId?: number) => {
 		ssh_keys: constants.SSH_FINGERPRINT,
 	}
 	const result = await post(URLS.CREATE_DROPLET, payload)
-	if (result.status > 300) throw new Error("Failed!")
+	// if (result.status > 300) throw new Error("Failed!")
 	return result.body.droplet
 }
 
 export const getDroplet = async (id: number) => {
 	const result = await get(URLS.GET_DROPLET(id))
-	if (result.status > 300) throw new Error("Failed!")
+	// if (result.status > 300) throw new Error("Failed!")
 	return result.body.droplet
 }
 
 export const shutDownDroplet = async (id: number) => {
 	const result = await post(URLS.DROPLET_ACTIONS(id), { type: "shutdown" })
-	if (result.status > 300) throw new Error("Failed!")
+	// if (result.status > 300) throw new Error("Failed!")
 	return result.body.action
 }
 
 export const getSnapshot = async (id: number) => {
 	const result = await get(URLS.GET_SNAPSHOT(id))
-	if (result.status > 300) throw new Error("Failed!")
+	// if (result.status > 300) throw new Error("Failed!")
 	return result.body.snapshot
 }
 
@@ -120,7 +136,7 @@ export const createSnapshot = async (
 		type: "snapshot",
 		name,
 	})
-	if (result.status > 300) throw new Error("Failed!")
+	// if (result.status > 300) throw new Error("Failed!")
 	return result.body.action
 }
 
@@ -143,6 +159,6 @@ export const deleteDroplet = async (id: number) => {
 			Authorization: "Bearer " + constants.DO_TOKEN,
 		},
 	})
-	if (result.status > 300) throw new Error("Failed!")
+	// if (result.status > 300) throw new Error("Failed!")
 	return result
 }
