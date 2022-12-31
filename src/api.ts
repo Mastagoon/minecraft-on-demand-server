@@ -12,9 +12,8 @@ export type ResponseModel = {
 	error?: any
 }
 
-export const post = async (url: string, body: any): Promise<ResponseModel> => {
+export const post = async (url: string, body: any, retries = 0): Promise<ResponseModel> => {
 	try {
-		let retries = 0
 		Log.info(`POST --> ${url}\n${JSON.stringify(body, null, 2)}`)
 		const result = await fetch(url, {
 			method: "POST",
@@ -30,7 +29,7 @@ export const post = async (url: string, body: any): Promise<ResponseModel> => {
 			Log.info(`Retrying... ${retries}`)
 			// wait for 30 seconds
 			await new Promise((resolve) => setTimeout(resolve, 30000))
-			return post(url, body)
+			return post(url, body, retries + 1)
 		}
 		if (result.status >= 400) throw new Error("Failed!")
 		const data = await result.json()
@@ -59,9 +58,8 @@ export const _delete = async (url: string): Promise<ResponseModel> => {
 	}
 }
 
-export const get = async (url: string): Promise<ResponseModel> => {
+export const get = async (url: string, retries = 0): Promise<ResponseModel> => {
 	try {
-		let retries = 0
 		Log.info(`GET --> ${url}`)
 		const result = await fetch(url, {
 			headers: {
@@ -71,11 +69,10 @@ export const get = async (url: string): Promise<ResponseModel> => {
 		})
 		Log.info(`result <-- ${result.status} - ${result.statusText}`)
 		if (result.status > 500 && retries < 5) {
-			retries++
 			Log.info(`Retrying... ${retries}`)
 			// wait for 30 seconds
 			await new Promise((resolve) => setTimeout(resolve, 30000))
-			return get(url)
+			return get(url, retries + 1)
 		}
 		if (result.status >= 400) throw new Error("Failed!")
 		const data = await result.json()
