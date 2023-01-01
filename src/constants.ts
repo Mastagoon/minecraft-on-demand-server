@@ -42,6 +42,8 @@ export const intializeConstants = () => {
 	constants.SSH_FINGERPRINT = SSH_FINGERPRINT!.split(",")
 	constants.SNAPSHOT_NAME = SNAPSHOT_NAME!
 	constants.DROPLET_NAME = DROPLET_NAME!
+	constants.DROPLET_REGION = DROPLET_REGION!
+	constants.DROPLET_SIZE = DROPLET_SIZE!
 }
 
 export default constants
