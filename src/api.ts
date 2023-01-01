@@ -24,6 +24,7 @@ export const post = async (url: string, body: any, retries = 0): Promise<Respons
 			body: JSON.stringify(body),
 		})
 		Log.info(`POST <-- ${url}\n${JSON.stringify(result, null, 2)}`)
+		// retry 500 errors. which happen sometimes for no reason
 		if (result.status > 500 && retries < 5) {
 			retries++
 			Log.info(`Retrying... ${retries}`)
@@ -97,8 +98,8 @@ export const getAllDroplets = async () => {
 export const createDroplet = async (snapshotId?: number) => {
 	const payload = {
 		name: constants.DROPLET_NAME,
-		region: "fra1",
-		size: "s-1vcpu-2gb",
+		region: constants.DROPLET_REGION,
+		size: constants.DROPLET_SIZE,
 		image: snapshotId,
 		ssh_keys: constants.SSH_FINGERPRINT,
 	}
