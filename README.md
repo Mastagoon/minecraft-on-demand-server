@@ -22,6 +22,7 @@ DROPLET_SIZE=s-2vcpu-2gb
 
 # Usage
 
+```
 npm install
 npm run build
 npm run dev
